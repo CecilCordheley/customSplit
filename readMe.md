@@ -1,7 +1,7 @@
 
 # Custom Split
 
-Custom Split permet de faire des chronos pour les speedrun avec un segmenteur entièrement personnalisable.
+Custom Split permet de faire des chronos pour les speedrun avec un segmenteur entièrement personnalisable grâce au CSS
 
 
 
@@ -15,3 +15,8 @@ Pour le moment je n'ai pas encore prévue de faire un executable. Donc dans une 
 ```bash
   node index.js
 ```
+puis rendez-vous sur la page 
+```url 
+http://localhost:3001/interface
+```
+pour accéder à l'interface de paramètrage et obtenir l'URL a intégrer sur l'overlay
