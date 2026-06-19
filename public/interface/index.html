@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Split</title>
+    <style>
+        .container {
+            display: grid;
+            grid-template-rows: 60px 1fr;
+            grid-template-columns: 200px 1fr;
+            grid-template-areas:
+                "header header"
+                "menu main";
+            height: 100vh;
+        }
+
+        header {
+            grid-area: header;
+            border: 1px solid #000;
+        }
+
+        main {
+            grid-area: main;
+            border: 1px solid #000;
+        }
+
+        menu {
+            grid-area: menu;
+            border: 1px solid #000;
+        }
+
+        footer {
+            grid-area: footer;
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Votre Split Customisable</h1>
+        </header>
+        <menu>
+            Menu
+        </menu>
+        <main>
+            Contenu
+        </main>
+        <footer>
+            Pied de page
+        </footer>
+    </div>
+</body>
+
+</html>
