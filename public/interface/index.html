@@ -5,37 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Custom Split</title>
-    <style>
-        .container {
-            display: grid;
-            grid-template-rows: 60px 1fr;
-            grid-template-columns: 200px 1fr;
-            grid-template-areas:
-                "header header"
-                "menu main";
-            height: 100vh;
-        }
-
-        header {
-            grid-area: header;
-            border: 1px solid #000;
-        }
-
-        main {
-            grid-area: main;
-            border: 1px solid #000;
-        }
-
-        menu {
-            grid-area: menu;
-            border: 1px solid #000;
-        }
-
-        footer {
-            grid-area: footer;
-            border: 1px solid #000;
-        }
-    </style>
+    <script src="../lib/core.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -43,16 +14,166 @@
         <header>
             <h1>Votre Split Customisable</h1>
         </header>
-        <menu>
-            Menu
-        </menu>
         <main>
-            Contenu
+            <section>
+                <label for="url">url</label>
+                <input type="text" id="url">
+            </section>
+            <menu>
+                <a href="#segments">Voir les segments</a>
+                <a href="#css">Voir le design</a>
+            </menu>
+            <section target="segments">
+                <h2>Segments</h2>
+                <ul id="segments"></ul>
+                <div>
+                    <label for="newSegment">Nouveau segment</label>
+                    <input type="text" id="newSegment" placeholder="Nom du segment">
+                    <button id="addSegment">➕ Segment</button>
+                </div>
+                <button id="updateSplit">Mettre à jour</button>
+            </section>
+            <section target="css">
+                <h2>Design</h2>
+                <div id="cssTree">
+                    
+                </div>
+            </section>
         </main>
         <footer>
-            Pied de page
+            © 2026 CecilCordheley. Tous droits réservés.
         </footer>
     </div>
+    <script>
+        const sections = document.querySelectorAll("[target]");
+        function resetSection() {
+            sections.forEach(s => {
+                s.style.display = "none";
+            })
+        }
+        resetSection();
+        const links = document.querySelectorAll("menu > a");
+        links.forEach(l => {
+            l.addEventListener("click", function () {
+                let target = this.getAttribute("href").substring(1);
+                resetSection();
+                console.log(`[target="${target}"]`);
+                document.querySelector(`[target="${target}"]`).style.display = "block"
+            })
+        })
+        var segments = [];
+        var file = "";
+        function setEditable() {
+            let compoments = document.querySelectorAll(".editable");
+            compoments.forEach(c => {
+                c.addEventListener("click", () => {
+                    let index = c.getAttribute("index_seg");
+                    let input = document.createElement("input");
+                    input.value = c.innerText;
+                    input.addEventListener("blur", () => {
+                        segments[index].name = input.value;
+                        let span = document.createElement("span");
+                        span.innerText = input.value;
+                        span.classList.add("editable");
+                        span.setAttribute("index_seg", index);
+                        input.replaceWith(span);
+                        setEditable();
+                    })
+                    c.replaceWith(input);
+                })
+            })
+        }
+        async function generateCSSTree(file) {
+            const reponse = await fetch("exemple/"+file, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            var result = await reponse.json();
+        }
+        async function generateSegments() {
+
+            let list = document.getElementById("segments");
+            list.innerHTML = "";
+            let header = document.createElement("li");
+            ["name", "best", "last", ""].forEach(label => {
+                let s = document.createElement("h3");
+                s.innerText = label;
+                header.appendChild(s);
+            });
+            list.appendChild(header);
+
+            segments.forEach((element, index) => {
+                let li = document.createElement("li");
+
+                for (var f in element) {
+                    let span = document.createElement("span");
+                    if (["best", "last"].includes(f)) {
+                        span.innerText = element[f] > 0 ? formatTime(element[f]) : 0;
+                    } else {
+                        span.innerText = element[f];
+                        span.classList.add("editable");
+                        span.setAttribute("index_seg", index);
+                    }
+                    li.appendChild(span);
+                    setEditable()
+                }
+                let del = document.createElement("button");
+                del.innerHTML = "❌";
+                del.addEventListener("click", () => {
+                    segments.splice(index, 1);
+                });
+                let reset = document.createElement("button");
+                reset.innerHTML = "🔁";
+                reset.addEventListener("click", () => {
+                    segments[index].best = null;
+                    segments[index].last = null;
+                });
+
+                li.appendChild(del);
+                li.appendChild(reset);
+                list.appendChild(li);
+            });
+
+        }
+        (async () => {
+            const param = await fetch("../param.json");
+            const reponse = await param.json();
+            document.getElementById("url").value = reponse.url;
+            file = reponse.file;
+            try {
+                const reponse = await fetch("../data/" + file, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                const result = await reponse.json();
+                segments = result;
+                generateSegments();
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+        document.getElementById("addSegment").addEventListener("click", () => {
+            const segName = document.getElementById("newSegment");
+            if (segName.value == "") return;
+            segments.push({ name: segName.value, best: null, last: null });
+            generateSegments("../data/" + file);
+        });
+        document.getElementById("updateSplit").addEventListener("click", async () => {
+            fetch('/api/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(segments)
+            }).then(r => { return r.json() }).then(result => {
+                if (result.status == "ok") {
+                    generateSegments();
+                }
+            });
+        })
+    </script>
 </body>
 
 </html>

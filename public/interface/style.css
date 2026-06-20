@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Calibri;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100vh;
+}
+
+header {
+    height: 10%;
+    background-color: #333;
+}
+
+main {
+    height: 80%;
+    background: #FFE;
+}
+
+section {
+    border: 1px solid #000;
+    padding: 20px;
+    width: 80%;
+    margin: 3px;
+}
+input[type="text"]{
+    border: 1px solid #333;
+    border-radius: 3px;
+}
+section>label {
+    display: inline-block;
+    width: 10%;
+    text-align: center;
+}
+div:has(#newSegment){
+    border-top: 1px solid #000;
+    padding: 5px;
+}
+#newSegment{
+    font-size: 1.2em;
+}
+button{
+    background: #005591;
+    font-size: 1.3em;
+    border-radius: 5px;
+}
+#segments{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+#segments li{
+    display: flex;
+}
+#segments li span{
+    border: 1px solid;
+    padding: 2px;
+    margin: 1px;
+    width: 25%;
+    text-align: center;
+}
+#segments li h3{
+    border: 1px solid;
+    padding: 2px;
+    margin: 1px;
+    width: 25%;
+    text-align: center;
+}
+section>input[type="text"] {
+    border: 1px solid #222;
+    padding: 3px;
+    border-radius: 3px;
+    font-size: 1.3em;
+    width: 80%;
+}
+
+h1 {
+    color: #FFF;
+}
+
+footer {
+    height: 10%;
+}
+
+header,
+main,
+footer {
+    width: 100%;
+    border: 1px solid;
+}

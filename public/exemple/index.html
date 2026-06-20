@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Split</title>
+    <script src="../lib/core.js"></script>
+    <script src="../lib/split.js"></script>
+    <link rel="stylesheet" href="customSplit.css">
+    <link rel="stylesheet" href="current.css">
+    <style>
+        .scene {
+            position: relative;
+            height: 150px;
+        }
+
+        .mainTimer {
+            position: absolute;
+            bottom: 0;
+            z-index: 2;
+            background: #055B;
+            color: #FFF;
+            padding: 0 10% 0;
+        }
+
+        #main {
+            position: relative;
+            width: 425px;
+            background-color: blue;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .segment {
+            position: absolute;
+            opacity: 0;
+            transition: .7s;
+            width: 150px;
+            height: 75px;
+        }
+
+        .segment.current {
+            opacity: .75;
+            left: 25%;
+            top: 25px;
+            z-index: 1;
+        }
+
+        .segment:has(+.current) {
+            opacity: .5;
+            left: 2%;
+            z-index: 0;
+        }
+
+        .segment.current+.segment {
+            opacity: .5;
+            right: 5%;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="scene">
+        <div id="main"></div>
+    </div>
+    <script>
+        let start = false;
+        function resetSegment() {
+            document.querySelectorAll(".segment").forEach(s => {
+                s.classList.remove("current");
+            })
+        }
+        let mainEl = document.getElementById("main");
+        let mainSplit = new CustomSplit(mainEl, () => {
+            resetSegment();
+            mainSplit.splitEl[mainSplit.index].classList.add("current");
+        }, () => {
+            resetSegment();
+            mainSplit.splitEl[mainSplit.index].classList.add("current");
+        }, () => {
+            mainSplit.updateSplit();
+            alert("end !");
+        });
+
+        mainSplit.loadSplit();
+        document.addEventListener("keydown", (e) => {
+
+            if (e.key !== " ") return;
+
+            if (!start) {
+                start = true;
+                mainSplit.process();
+                return;
+            }
+
+            mainSplit.next();
+        });
+        //   mainSplit.process();
+    </script>
+</body>
+
+</html>

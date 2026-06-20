@@ -1,7 +1,8 @@
 import path from "path";
 import express from "express";
 import fs from "fs";
-
+import puppeteer from "puppeteer"
+//const { exec } = require('child_process');
 const app = express();
 
 // Utiliser le port du process (Electron peut le passer) ou 3000
@@ -25,10 +26,29 @@ app.get("/interface", (req, res) => {
 
 app.post('/api/update', express.json(), async (req, res) => {
   try {
-    const dataPath = path.join(process.cwd(), 'public', 'param.json');
+
+    const paramPath = path.join(
+      process.cwd(),
+      'public',
+      'param.json'
+    );
+
+    const param = JSON.parse(
+      await fs.promises.readFile(
+        paramPath,
+        'utf8'
+      )
+    );
+
+    const dataFilePath = path.join(
+      process.cwd(),
+      'public',
+      'data',
+      param.file
+    );
 
     await fs.promises.writeFile(
-      dataPath,
+      dataFilePath,
       JSON.stringify(req.body, null, 2),
       'utf8'
     );
@@ -37,7 +57,9 @@ app.post('/api/update', express.json(), async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({
+      error: err.message
+    });
   }
 });
 // API pour récupérer les données
@@ -56,3 +78,9 @@ app.get("/api/data", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Express → http://localhost:${PORT}/interface`);
 });
+(async () => {
+  const browser = await puppeteer.launch({headless: false});
+  const page = await browser.newPage();
+  await page.goto('http://localhost:3001/interface/');
+  await page.setViewport({width: 600, height: 800});
+})();

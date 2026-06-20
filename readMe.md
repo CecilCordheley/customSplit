@@ -16,7 +16,7 @@ Pour le moment je n'ai pas encore prévue de faire un executable. Donc dans une 
   node index.js
 ```
 puis rendez-vous sur la page 
-```url 
+```bash 
 http://localhost:3001/interface
 ```
-pour accéder à l'interface de paramètrage et obtenir l'URL à intégrer sur l'overlay
+pour accéder à l'interface de paramètrage et obtenir l'URL a intégrer sur l'overlay
