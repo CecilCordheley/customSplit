@@ -1,0 +1,50 @@
+.segment {
+    margin: 2px;
+    width: 325px;
+    height: 125px;
+    border-left:3px solid #555;
+    border-bottom:4px solid #444;
+    border-top:3px solid #555;
+    border-right:4px solid #444;
+    background-color: #333;
+    color: #FFF;
+    display: flex;
+    flex-direction: column;
+    font-family: pixelSplitter;
+    font-size: .9em;
+}
+.mainTimer {
+    font-size: 1.6em;
+    font-family: system-ui;
+}
+.cSplit_name {
+    background: #333;
+    padding: 5px;
+}
+
+.cSplit_best {
+    color: #0F0;
+    border-bottom: 1px solid #000;
+}
+.cSplit_last{
+    border-bottom: 1px solid #000;
+}
+.cSplit_best::before {
+    content: "best : ";
+}
+
+.cSplit_last::before {
+    content: "last : ";
+}
+
+.gold {
+    color: gold;
+}
+
+.ahead {
+    color: limegreen;
+}
+
+.behind {
+    color: tomato;
+}

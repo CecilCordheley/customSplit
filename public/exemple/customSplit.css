@@ -1,8 +1,15 @@
+ @font-face {
+    font-family:'gamer';
+    src: url(../data/assets/fonts/Gamer.ttf);
+ }
+ @font-face {
+    font-family: pixelSplitter;
+    src: url(../data/assets/fonts/PixelSplitter-Bold.ttf);
+ }
 .segment {
     margin: 2px;
     width: 325px;
     height: 125px;
-    background: #555;
     color: #FFF;
     display: flex;
     flex-direction: column;
@@ -15,7 +22,9 @@
     background: #333;
     padding: 5px;
 }
-
+.cSplit_name img{
+    width: 30px;
+}
 .cSplit_best {
     color: #0F0;
     border-bottom: 1px solid #000;

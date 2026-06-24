@@ -1,21 +1,37 @@
 [
   {
-    "name": "Midgar",
+    "icon": "",
+    "name": "Balamb",
     "best": null,
     "last": null
   },
   {
-    "name": "segment 2",
+    "icon": "",
+    "name": "Ifrit",
     "best": null,
     "last": null
   },
   {
-    "name": "segment 3",
+    "icon": "",
+    "name": "Zygen",
     "best": null,
     "last": null
   },
   {
-    "name": "segment 4",
+    "icon": "",
+    "name": "Elvoret",
+    "best": null,
+    "last": null
+  },
+  {
+    "icon": "",
+    "name": "Escape Dollet",
+    "best": null,
+    "last": null
+  },
+  {
+    "icon": "",
+    "name": "Zell Card",
     "best": null,
     "last": null
   }

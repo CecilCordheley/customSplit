@@ -1,6 +1,8 @@
 class CustomSplit {
     constructor(container, onStart = null, onSplit = null, onEnd = null) {
         this.container = container;
+        this.current = null;
+        this.lastSegment=null
         this.splits = [];
         this.splitEl = [];
         this.curentSplit = null;
@@ -57,7 +59,16 @@ class CustomSplit {
                 spans[span] = el;
                 segment.appendChild(el);
             });
-            spans["name"].innerText = s.name;
+            
+            
+            if(s.icon!=""){
+                let img=document.createElement('img');
+                img.src="../data/assets/icons/"+s.icon;
+                console.dir(img);
+                spans["name"].appendChild(img);
+                spans["name"].innerHTML += s.name;
+            }else
+                spans["name"].innerText = s.name;
             spans["best"].innerText = formatTime(s.best ?? 0);
             spans["last"].innerText = formatTime(s.last ?? 0);
             this.splitEl.push(segment);
@@ -71,8 +82,8 @@ class CustomSplit {
         let result = await fetch("../param.json");
         let reponse = await result.json();
         console.log(reponse.file);
-        let file=await fetch("../data/"+reponse.file);
-        let splits=await file.json();
+        let file = await fetch("../data/" + reponse.file);
+        let splits = await file.json();
         this.splits = splits;
         this.generateSegments();
     }
@@ -108,7 +119,8 @@ class CustomSplit {
 
         // 5. UI refs (évite querySelector multiples si possible ensuite)
         const el = this.splitEl[this.index];
-
+        this.current = el;
+        this.lastSegment=this.splitEl[this.index-1];
         const deltaEl = el.querySelector(".cSplit_delta");
         const lastEl = el.querySelector(".cSplit_last");
         const bestEl = el.querySelector(".cSplit_best");

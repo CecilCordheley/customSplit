@@ -4,9 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Split</title>
-    <script src="../lib/core.js"></script>
+    <title>Custom Split - ⚙configuration⚙</title>
     <link rel="stylesheet" href="style.css">
+    <link id="theme" rel="stylesheet" href="../exemple/current.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/theme/dracula.min.css">
+    <script src="../lib/core.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/addon/edit/closebrackets.min.js"></script>
 </head>
 
 <body>
@@ -22,6 +29,7 @@
             <menu>
                 <a href="#segments">Voir les segments</a>
                 <a href="#css">Voir le design</a>
+                <a href="#cssEditor">Voir le fichier CSS</a>
             </menu>
             <section target="segments">
                 <h2>Segments</h2>
@@ -35,9 +43,11 @@
             </section>
             <section target="css">
                 <h2>Design</h2>
-                <div id="cssTree">
-                    
-                </div>
+                <div id="cssTree"></div>
+            </section>
+            <section target="cssEditor">
+                <textarea id="editor"></textarea>
+                <button onclick="saveFile()">💾 Sauvegarder</button>
             </section>
         </main>
         <footer>
@@ -45,6 +55,85 @@
         </footer>
     </div>
     <script>
+        var editor=null;
+        async function openEditor(file) {
+            if (editor==null) {
+                editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+                    lineNumbers: true,
+                    mode: "application/css",
+                    theme: "dracula",         // Le thème choisi
+                    matchBrackets: true,
+                    autoCloseBrackets: true,
+                    tabSize: 2,           // Indentation en 2 espaces
+                    indentUnit: 2,
+                    smartIndent: true
+                });
+            }
+            const res = await fetch(file);
+            const text = await res.text();
+            editor.setValue(text);
+        }
+        function setLastPropery() {
+            const lasts = document.querySelectorAll('details div:last-of-type');
+            lasts.forEach(l => {
+                let input = l.querySelector("input");
+                input.addEventListener("keyup", (e) => {
+                    console.dir(e);
+                    if (e.code.toLowerCase() == "tab") {
+                        let d = document.createElement("div");
+                        let input_lbl = document.createElement("input");
+                        let input_val = document.createElement("input");
+                        d.appendChild(input_lbl);
+                        d.appendChild(input_val);
+                        input_lbl.addEventListener("blur", () => {
+                            let lbl = document.createElement("label");
+                            lbl.innerText = input_lbl.value;
+                            input_lbl.replaceWith(lbl);
+                        });
+                        l.appendChild(d);
+                    }
+                })
+                //console.log("last label ",l.querySelector("label").innerText);
+            })
+        }
+        function generateCSSTree() {
+            let cssTree = document.getElementById("cssTree");
+            const css = document.getElementById("theme");
+            const sheet = css.sheet;
+            for (const rule of sheet.cssRules) {
+                //console.dir(rule.value);
+                let divContainer = document.createElement("details");
+                divContainer.classList.add("CssElement");
+
+                let selector = document.createElement("summary");
+                divContainer.appendChild(selector);
+                selector.innerText = rule.selectorText;
+                divContainer.dataset.selector = rule.selectorText;
+                cssTree.appendChild(divContainer);
+                for (const property of rule.style) {
+                    if (rule.style.getPropertyValue(property) == "initial")
+                        break;
+                    let d = document.createElement("div");
+                    let lbl = document.createElement("label");
+                    lbl.innerText = property;
+
+                    let input = document.createElement("input");
+                    input.dataset.property = property;
+                    //console.dir(property);
+                    input.dataset.selector = rule.selectorText;
+                    input.value = rule.style.getPropertyValue(property);
+                    input.addEventListener("input", () => {
+                        rule.style.setProperty(property, input.value);
+                    });
+                    //console.dir(input.value);
+                    d.appendChild(lbl)
+                    d.appendChild(input);
+                    divContainer.appendChild(d);
+                }
+            }
+            setLastPropery();
+        }
+
         const sections = document.querySelectorAll("[target]");
         function resetSection() {
             sections.forEach(s => {
@@ -70,8 +159,9 @@
                     let index = c.getAttribute("index_seg");
                     let input = document.createElement("input");
                     input.value = c.innerText;
+                    let data=c.getAttribute("data");
                     input.addEventListener("blur", () => {
-                        segments[index].name = input.value;
+                        segments[index][data] = input.value;
                         let span = document.createElement("span");
                         span.innerText = input.value;
                         span.classList.add("editable");
@@ -83,20 +173,12 @@
                 })
             })
         }
-        async function generateCSSTree(file) {
-            const reponse = await fetch("exemple/"+file, {
-                headers: {
-                    "Content-Type": "application/json",
-                }
-            });
-            var result = await reponse.json();
-        }
         async function generateSegments() {
 
             let list = document.getElementById("segments");
             list.innerHTML = "";
             let header = document.createElement("li");
-            ["name", "best", "last", ""].forEach(label => {
+            ["icon","name", "best", "last", ""].forEach(label => {
                 let s = document.createElement("h3");
                 s.innerText = label;
                 header.appendChild(s);
@@ -113,6 +195,7 @@
                     } else {
                         span.innerText = element[f];
                         span.classList.add("editable");
+                        span.setAttribute("data",f);
                         span.setAttribute("index_seg", index);
                     }
                     li.appendChild(span);
@@ -140,6 +223,8 @@
             const param = await fetch("../param.json");
             const reponse = await param.json();
             document.getElementById("url").value = reponse.url;
+            cssFile=reponse.css;
+            openEditor("../exemple/"+cssFile);
             file = reponse.file;
             try {
                 const reponse = await fetch("../data/" + file, {
@@ -157,7 +242,7 @@
         document.getElementById("addSegment").addEventListener("click", () => {
             const segName = document.getElementById("newSegment");
             if (segName.value == "") return;
-            segments.push({ name: segName.value, best: null, last: null });
+            segments.push({icon:"", name: segName.value, best: null, last: null });
             generateSegments("../data/" + file);
         });
         document.getElementById("updateSplit").addEventListener("click", async () => {
@@ -169,10 +254,12 @@
                 body: JSON.stringify(segments)
             }).then(r => { return r.json() }).then(result => {
                 if (result.status == "ok") {
+                    alert("Les segments sont mis à jour !");
                     generateSegments();
                 }
             });
         })
+        generateCSSTree();
     </script>
 </body>
 
