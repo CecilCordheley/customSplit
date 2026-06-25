@@ -19,4 +19,4 @@ puis rendez-vous sur la page
 ```bash 
 http://localhost:3001/interface
 ```
-pour accéder à l'interface de paramètrage et obtenir l'URL a intégrer sur l'overlay
+pour accéder à l'interface de paramètrage et obtenir l'URL à intégrer sur l'overlay
