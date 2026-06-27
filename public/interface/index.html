@@ -34,6 +34,18 @@
             <section target="segments">
                 <h2>Segments</h2>
                 <ul id="segments"></ul>
+                <table id="segTab">
+                    <thead>
+                        <th>Icons</th>
+                        <th>Nom</th>
+                        <th>best</th>
+                        <th>last</th>
+                        <th>Actions</th>
+                    </thead>
+                    <tbody>
+                        <!--Ici les split généré via fetch-->
+                    </tbody>
+                </table>
                 <div>
                     <label for="newSegment">Nouveau segment</label>
                     <input type="text" id="newSegment" placeholder="Nom du segment">
@@ -175,21 +187,13 @@
         }
         async function generateSegments() {
 
-            let list = document.getElementById("segments");
+            let list = document.querySelector("#segTab tbody");
             list.innerHTML = "";
-            let header = document.createElement("li");
-            ["icon","name", "best", "last", ""].forEach(label => {
-                let s = document.createElement("h3");
-                s.innerText = label;
-                header.appendChild(s);
-            });
-            list.appendChild(header);
-
             segments.forEach((element, index) => {
-                let li = document.createElement("li");
+                let li = document.createElement("tr");
 
                 for (var f in element) {
-                    let span = document.createElement("span");
+                    let span = document.createElement("td");
                     if (["best", "last"].includes(f)) {
                         span.innerText = element[f] > 0 ? formatTime(element[f]) : 0;
                     } else {
@@ -212,9 +216,10 @@
                     segments[index].best = null;
                     segments[index].last = null;
                 });
-
-                li.appendChild(del);
-                li.appendChild(reset);
+                let actionCell=document.createElement("td");
+                actionCell.appendChild(reset);
+                actionCell.appendChild(del);
+                li.appendChild(actionCell);
                 list.appendChild(li);
             });
 

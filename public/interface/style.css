@@ -70,27 +70,24 @@ button{
     font-size: 1.3em;
     border-radius: 5px;
 }
-#segments{
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-}
-#segments li{
-    display: flex;
-}
-#segments li span{
+#segTab{
     border: 1px solid;
-    padding: 2px;
-    margin: 1px;
-    width: 25%;
+    border-collapse: collapse;
+    width: 100%;
+}
+#segTab thead tr th, #segTab tbody tr td{
+    border: 1px solid;
     text-align: center;
 }
-#segments li h3{
-    border: 1px solid;
-    padding: 2px;
-    margin: 1px;
-    width: 25%;
-    text-align: center;
+td:has(button){
+    display: flex;
+    align-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+td button {
+    width: 65px;
+    margin: 4px;
 }
 section>input[type="text"] {
     border: 1px solid #222;

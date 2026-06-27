@@ -2,37 +2,37 @@
   {
     "icon": "",
     "name": "Balamb",
-    "best": null,
-    "last": null
+    "best": 330,
+    "last": 2021
   },
   {
     "icon": "",
     "name": "Ifrit",
-    "best": null,
-    "last": null
+    "best": 251,
+    "last": 333
   },
   {
     "icon": "",
     "name": "Zygen",
-    "best": null,
-    "last": null
+    "best": 59,
+    "last": 3008
   },
   {
     "icon": "",
     "name": "Elvoret",
-    "best": null,
-    "last": null
+    "best": 53,
+    "last": 839
   },
   {
     "icon": "",
     "name": "Escape Dollet",
-    "best": null,
-    "last": null
+    "best": 65,
+    "last": 203
   },
   {
     "icon": "",
     "name": "Zell Card",
-    "best": null,
-    "last": null
+    "best": 47,
+    "last": 163
   }
 ]

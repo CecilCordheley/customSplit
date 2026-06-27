@@ -8,13 +8,14 @@
   },
   "author": "cecil cordheley",
   "license": "ISC",
-  "description": "",
+  "description": "Chrono pour Training SpeedRun full Customisable",
   "dependencies": {
     "child_process": "^1.0.2",
     "express": "^5.2.1",
     "fs": "^0.0.1-security",
     "open": "^11.0.0",
     "path": "^0.12.7",
-    "puppeteer": "^25.1.0"
+    "puppeteer": "^25.1.0",
+    "sea": "^1.0.2"
   }
 }

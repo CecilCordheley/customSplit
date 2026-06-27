@@ -15,7 +15,8 @@
         }
         .scene {
             position: relative;
-            height: 150px;
+            height: 200px;
+            width: 425px;
         }
 
         .scene>span {
@@ -38,12 +39,14 @@
             border-bottom: 3px solid #066;
             border-right: 3px solid #066;
         }
-
+        .timerGold{
+            background: #665800;
+        }
         #main {
             position: relative;
             width: 425px;
             background-color: #3336; 
-            height: 100%; 
+            height: 150px; 
             overflow: hidden;
         }
 
@@ -62,7 +65,18 @@
             z-index: 1;
             
         }
-
+        .lastSeg{
+            background: #555;
+            border-top: 2px solid #777;
+            border-right: 2px solid #777;
+            border-bottom: 2px solid #333;
+            border-left: 2px solid #333;
+             width: 100%;
+             min-height: 25px;
+             font-size: 1.6em;
+            color: #FFF;
+            font-family: gamer;
+        }
         .segment:has(+.current) {
             opacity: .5;
             left: 2%;
@@ -80,6 +94,7 @@
 <body>
     <div class="scene">
         <div id="main"></div>
+        <div class="lastSeg"></div>
     </div>
     <script>
         let start = false;
@@ -95,21 +110,30 @@
         }, () => {
             resetSegment();
             mainSplit.splitEl[mainSplit.index].classList.add("current");
+            let lastSeg=document.querySelector(".lastSeg")
+            lastSeg.classList.add("lastSeg");
+            lastBest=formatTime(mainSplit.lastSplit.best);
+            lastSeg.innerHTML=`${mainSplit.lastSplit.name} > ${lastBest}`;
         }, () => {
             mainSplit.updateSplit();
             document.querySelector(".scene").innerHTML += "<span>Fin de la Run !!</span>"
         });
-
+        mainSplit.onLoseTime=()=>{
+            document.querySelector(".mainTimer").classList.add(".timerGold");
+        }
         mainSplit.loadSplit();
         document.addEventListener("keydown", (e) => {
-            if (e.key !== " ") return;
-
+            if (e.key !== " " && e.key!=="ArrowDown") return;
+            if(e.key==" "){
             if (!start) {
                 start = true;
                 mainSplit.process();
                 return;
             }
             mainSplit.next();
+        }else{
+            mainSplit.skip();
+        }
         });
         document.addEventListener("keyup", (e) => {
             if (e.key.toLowerCase() !== "escape")

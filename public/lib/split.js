@@ -2,10 +2,12 @@ class CustomSplit {
     constructor(container, onStart = null, onSplit = null, onEnd = null) {
         this.container = container;
         this.current = null;
-        this.lastSegment=null
+        this.lastSegment = null;
         this.splits = [];
         this.splitEl = [];
         this.curentSplit = null;
+        this.lastSplit = null;
+        this.onLoseTime=null;
         this.index = 0;
         this.timer = 0;
         this.interval = 0;
@@ -59,15 +61,15 @@ class CustomSplit {
                 spans[span] = el;
                 segment.appendChild(el);
             });
-            
-            
-            if(s.icon!=""){
-                let img=document.createElement('img');
-                img.src="../data/assets/icons/"+s.icon;
+
+
+            if (s.icon != "") {
+                let img = document.createElement('img');
+                img.src = "../data/assets/icons/" + s.icon;
                 console.dir(img);
                 spans["name"].appendChild(img);
                 spans["name"].innerHTML += s.name;
-            }else
+            } else
                 spans["name"].innerText = s.name;
             spans["best"].innerText = formatTime(s.best ?? 0);
             spans["last"].innerText = formatTime(s.last ?? 0);
@@ -87,6 +89,64 @@ class CustomSplit {
         this.splits = splits;
         this.generateSegments();
     }
+    skip() {
+        if (this.index >= this.splits.length) {
+            this.stopTimer();
+            return;
+        }
+        const splitTime = this.timer;
+        const segmentTime = splitTime - this.lastSplitTime;
+        const segment = this.splits[this.index];
+        // 9. avancer timer global
+        this.lastSplitTime = splitTime;
+        this.index++;
+        // 11. fin de run
+        if (this.index >= this.splits.length) {
+            this.stopTimer();
+
+            if (this.onEnd) {
+                this.onEnd.call(this, this.timer);
+            }
+            return;
+        }
+        if (this.index > 0) {
+            this.lastSplit = this.splits[this.index - 1];
+        }
+        // 3. delta basé sur le BEST AVANT modification
+        const previousBest = segment.best;
+        const isGold =
+            previousBest == null || segmentTime < previousBest;
+
+        const delta = previousBest == null
+            ? 0
+            : segmentTime - previousBest;
+        // 10. callback split
+        if (this.onSplit) {
+            this.onSplit.call(this, {
+                index: this.index - 1,
+                segmentTime,
+                totalTime: splitTime,
+                isGold,
+                delta
+            });
+        }
+
+    }
+    checkCurrentTimer(splitTime, segmentTime, segment) {
+
+
+        // 3. delta basé sur le BEST AVANT modification
+        const previousBest = segment.best;
+
+
+        const delta = previousBest == null
+            ? 0
+            : segmentTime - previousBest;
+        const isGold =
+            previousBest == null || segmentTime < previousBest;
+
+        return { delta: delta, isGold: isGold, previousBest: previousBest };
+    }
     next() {
 
         // 1. sécurité fin de run
@@ -100,15 +160,7 @@ class CustomSplit {
         const segmentTime = splitTime - this.lastSplitTime;
 
         const segment = this.splits[this.index];
-
-        // 3. delta basé sur le BEST AVANT modification
-        const previousBest = segment.best;
-        const isGold =
-            previousBest == null || segmentTime < previousBest;
-
-        const delta = previousBest == null
-            ? 0
-            : segmentTime - previousBest;
+        const { delta, isGold, previousBest } = this.checkCurrentTimer(splitTime, segmentTime, segment);
 
         // 4. MAJ données
         segment.last = segmentTime;
@@ -120,7 +172,7 @@ class CustomSplit {
         // 5. UI refs (évite querySelector multiples si possible ensuite)
         const el = this.splitEl[this.index];
         this.current = el;
-        this.lastSegment=this.splitEl[this.index-1];
+        this.lastSegment = this.splitEl[this.index - 1];
         const deltaEl = el.querySelector(".cSplit_delta");
         const lastEl = el.querySelector(".cSplit_last");
         const bestEl = el.querySelector(".cSplit_best");
@@ -157,6 +209,9 @@ class CustomSplit {
             }
             return;
         }
+        if (this.index > 0) {
+            this.lastSplit = this.splits[this.index - 1];
+        }
         // 10. callback split
         if (this.onSplit) {
             this.onSplit.call(this, {
@@ -178,6 +233,17 @@ class CustomSplit {
         this.timer++;
         if (this.timerEl != undefined)
             this.timerEl.innerHTML = formatTime(this.timer);
+        const splitTime = this.timer;
+        if (this.lastSplitTime != undefined) {
+            const segmentTime = splitTime - this.lastSplitTime;
+            const segment = this.splits[this.index];
+            const { delta, isGold, previousBest } = this.checkCurrentTimer(splitTime, segmentTime, segment);
+            if(!isGold){
+                if(this.onLoseTime!=null){
+                    this.onLoseTime.call(this);
+                }
+            }
+        }
     }
     process() {
         if (this.running) return;

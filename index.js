@@ -82,5 +82,5 @@ app.listen(PORT, () => {
   const browser = await puppeteer.launch({headless: false});
   const page = await browser.newPage();
   await page.goto('http://localhost:3001/interface/');
-  await page.setViewport({width: 600, height: 800});
+  await page.setViewport({width: 750, height: 800});
 })();
